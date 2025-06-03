@@ -15,9 +15,10 @@ public class ManagerSeller implements SellerInterface {
 
     private String input;
     private String msg;
-    private final int SIZE_INCREASE = 2;
 
     private int numberOfSellers;
+
+    private int last_id;
 
     private final Comparator<Seller> comparatorSeller;
 
@@ -68,6 +69,7 @@ public class ManagerSeller implements SellerInterface {
 
     public void addSeller(Seller seller) {
         list_seller.add(seller);
+        last_id++;
     }
     public void showlist(){
         for (Seller s : list_seller) {
@@ -128,6 +130,18 @@ public class ManagerSeller implements SellerInterface {
         return Integer.parseInt(input) - 1;
     }
 
+    public Seller getSellerById(int id) {
+        for (Seller s : list_seller) {
+            if (s.getSeller_id() == id) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    public int getLastId() {
+        return last_id;
+    }
 }
 
 

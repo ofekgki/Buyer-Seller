@@ -11,8 +11,6 @@ import Models.ProductSpecialPackage;
 public class ManagerProduct implements ProductInterface {
 
 
-    private Set<Observer> set = new HashSet<>();
-
     private final Categories categoriesArrays;
 
     ArrayList<Product> products_list = new ArrayList<>();
@@ -35,14 +33,6 @@ public class ManagerProduct implements ProductInterface {
 
     }
 
-    public void attach(Observer o) {
-        set.add(o);
-    }
-
-    public void myNotify(String msg) {
-        for (Observer o : set)
-            o.update(msg);
-    }
 
     public int getLogicProductsSize() {
         return logicProductsSize;

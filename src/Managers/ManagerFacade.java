@@ -2,10 +2,10 @@ package Managers;
 
 import Enums.Category;
 import Enums.ExceptionsMessages;
-import Factory.FactoryCommands;
 import Factory.FactoryProduct;
 import Factory.FactoryUser;
 import Models.*;
+
 
 import java.util.*;
 
@@ -14,29 +14,21 @@ public class ManagerFacade implements Manageable {
     private final ManagerBuyer managerBuyer;
     private final ManagerSeller managerSeller;
     private final ManagerProduct managerProduct;
-    private static Memento memento;
-    ArrayList<?> array_q18;
     private String input;
     private String message;
 
     private final FactoryProduct fPro;
     private final FactoryUser fUser;
-    private final FactoryCommands fCommands;
 
     private static ManagerFacade instance;
 
 
     private ManagerFacade() {
-
-        array_q18 = new ArrayList<>();
         managerBuyer = ManagerBuyer.getInstance();
         managerSeller = ManagerSeller.getInstance();
         managerProduct = ManagerProduct.getInstance();
-        managerProduct.attach(new Action1());
-        managerProduct.attach(new Action2());
         fPro = new FactoryProduct();
         fUser = new FactoryUser();
-        fCommands = new FactoryCommands();
 
     }
 
@@ -58,14 +50,6 @@ public class ManagerFacade implements Manageable {
         System.out.println("7) Seller's details");
         System.out.println("8) Product's by category");
         System.out.println("9) Replace current cart with cart from history");
-        System.out.println("10) Run Tests");
-        System.out.println("99)  Q15");
-        System.out.println("100) Q16");
-        System.out.println("101) Q17:");
-        System.out.println("102) Q18:");
-        System.out.println("103) Q19:");
-        System.out.println("104) Create Memento:");
-        System.out.println("105) Set Memento:");
         System.out.println("Please enter your choice: ");
     }
 
@@ -107,49 +91,10 @@ public class ManagerFacade implements Manageable {
 //        managerBuyer.getBuyers()[buyerIndex].getCurrentCart().addProductToCart(p1);
     }
 
-    public ArrayList<String> toArrayList(Map<String, Integer> map) {
-        ArrayList<String> arr = new ArrayList<>();
-        Set<String> set = map.keySet();
-        Iterator<String> it2 = set.iterator();
-        while (it2.hasNext()) {
-            arr.add(it2.next());
-        }
-        return arr;
-    }
 
-    public void printByListIterator(List<?> lst) {
-
-        //ListIterator<?> it = lst.listIterator(lst.size());
-        IteratorTarget lit = new ListIteratorAdapter(lst.listIterator(lst.size()));
-        while (lit.myHasPrevious()) {
-            System.out.println(lit.myPrevious());
-            lit.myNext();
-            System.out.println(lit.myPrevious());
-        }
-    }
-
-//    public SortedSet<String> ToTreeSet() {
-//        SortedSet<String> sortedSet = new TreeSet<>((o1, o2) -> {
-//            String lowerO1 = o1.toLowerCase();
-//            String lowerO2 = o2.toLowerCase();
-//
-//            if (lowerO1.equals(lowerO2)) {
-//                return 0;
-//            }
-//            int lengthDiff = lowerO1.length() - lowerO2.length();
-//            if (lengthDiff != 0) {
-//                return lengthDiff;
-//            }
-//            return lowerO1.compareTo(lowerO2);
-//        });
-//        for (int i = 0; i < managerProduct.getLogicProductsSize(); i++) {
-//            sortedSet.add(managerProduct.getAllProducts()[i].getProductName().toUpperCase());
-//        }
-//        return sortedSet;
-//    }
 
     public void addProductSeller() {
-        int id =0; /// Kמחוק!
+        int id =0; ///
         if (managerSeller.getNumberOfSellers() == 0) {
             System.out.println("Haven't sellers yet, cannot be proceed. return to Menu.");
             return;
@@ -269,100 +214,6 @@ public class ManagerFacade implements Manageable {
     }
 
 
-//    public void printArrayByOrder() { //q15
-//        if (managerProduct.getAllProducts().length != 0)
-//            managerProduct.printArray();
-//        else {
-//            System.out.println("Nothing to use please enter products");
-//        }
-//    }
-
-//    public void printArrayByMap() { //q16
-//        if (managerProduct.getAllProducts().length != 0) {
-//            Map<String, Integer> map = fPro.toLinkedHashMap(managerProduct.getAllProducts());
-//            map.forEach((String, Integer) -> {
-//                System.out.println(String.format("%-4s........%4d", String, map.get(String)));
-//            });
-//        } else {
-//            System.out.println("Nothing to use please enter products");
-//        }
-//
-//    }
-
-//    public void printCountOfItemInMap() { //q17
-//        if (managerProduct.getAllProducts().length != 0) {
-//
-//            String name = UserInput.stringInput("Please enter the string:").toLowerCase();
-//            Map<String, Integer> map = fPro.toLinkedHashMap(managerProduct.getAllProducts());
-//            if (map.containsKey(name)) {
-//                System.out.println(
-//                        "The number of times '" + name + "' appears in the original array is " + map.get(name));
-//            } else
-//                System.out.println("the '" + name + "' is not exist");
-//        } else {
-//            System.out.println("Nothing to use please enter products");
-//        }
-//    }
-//
-//    public void printItemTwice() { //q18
-//        if (managerProduct.getAllProducts().length != 0) {
-//            array_q18 = createArray_q18();
-//            printByListIterator(array_q18);
-//        } else {
-//            System.out.println("Nothing to use please enter products");
-//            return;
-//        }
-//        String input = UserInput.stringInput("Do you want to see the output of my self-implemented iterators (Y/y or any other key to skip)");
-//        if (input.equalsIgnoreCase("y")) {
-//
-//            System.out.println("print array by order with my Iterator: ");
-//            printByConcerteIterator();
-//
-//            System.out.println("print array by order with my ListIterator: ");
-//
-//            printWithMyListIterator();
-//
-//
-//        }
-//    }
-//
-//    public void printWithMyListIterator() {
-//
-//        ListIterator<?> it = managerProduct.listIterator();
-//        while (it.hasNext())
-//            System.out.println(it.next());
-//        managerProduct.myNotify("My ListIterator Ended!");
-//        System.out.println("-----------------------------------");
-//        System.out.println("print array from opposite order:  ");
-//
-//        while (it.hasPrevious())
-//            System.out.println(it.previous());
-//        managerProduct.myNotify("My ListIterator Ended!");
-//
-//    }
-//
-//    public void printByConcerteIterator() {
-//
-//        Iterator<?> it = managerProduct.iterator();
-//        while (it.hasNext())
-//            System.out.println(it.next());
-//        managerProduct.myNotify("My Iterator Ended!");
-//
-//
-//    }
-//
-//    public void printSortedWithLambda() { //q19
-//        if (managerProduct.getAllProducts().length != 0) {
-//            SortedSet<? extends String> sortSet = fPro.ToTreeSet(managerProduct.getLogicProductsSize(),
-//                    managerProduct.getAllProducts());
-//            for (String s : sortSet)
-//                System.out.println(s);
-//
-//        } else {
-//            System.out.println("Nothing to use please enter products");
-//        }
-//    }
-
     public void addProductSeller(int id, int sellerIndex, String productName, int productPrice, Category category,
                                  int specialPackagePrice) {
 
@@ -395,8 +246,8 @@ public class ManagerFacade implements Manageable {
 
         String username = input;
         String password = UserInput.stringInput("Please enter password:");
-
-        //sql_helper.addSeller(username,password);
+        int last_id = managerSeller.getLastId();
+        //sql_helper.addSeller(new Seller(last_id,username,password));
         //managerSeller.addSeller(fUser.addSellerFromUser(username, password));
 
         System.out.println("Seller added successfully.");
@@ -473,62 +324,6 @@ public class ManagerFacade implements Manageable {
 
         managerBuyer.updateCartHistory();
 
-    }
-//
-//    public ArrayList<?> createArray_q18() {
-//        Map<String, Integer> map = fPro.toLinkedHashMap(managerProduct.getAllProducts());
-//        ArrayList<?> arr = toArrayList(map);
-//        return arr;
-//
-//    }
-
-//    public void case104() {
-//
-//        if (managerProduct.getAllProducts().length != 0) {
-//            array_q18 = createArray_q18();
-//            memento = createMemento();
-//            System.out.println(memento);
-//        } else {
-//            System.out.println("Nothing to save ,please enter products");
-//        }
-//    }
-
-    public void case105() {
-
-        if (memento != null) {
-            setMemento(memento);
-            System.out.println(memento);
-        } else {
-
-            System.out.println("Nothing to undo");
-        }
-    }
-
-
-    public static class Memento {
-        private final ArrayList<?> array_q18;
-
-        @Override
-        public String toString() {
-            return "Memento of ArrayList: = " + array_q18 + " ";
-        }
-
-        private Memento(ArrayList<?> array_q18) {
-            this.array_q18 = new ArrayList<>(array_q18);
-        }
-
-    }
-
-    public Memento createMemento() {
-        return new Memento(array_q18);
-    }
-
-    public void setMemento(Memento m) {
-        this.array_q18 = new ArrayList<>(array_q18);
-    }
-
-    public void actionByCommand(int action){
-        fCommands.createCommand(action).execute();
     }
 
     public void case_2(){

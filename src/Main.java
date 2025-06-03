@@ -74,19 +74,6 @@ public class Main {
                 case 9:
                     managerFacade.case9();
                     break;
-                case 10:
-                    //managerFacade.hardCoded();
-                    break;
-//                case 99, 100, 101, 102, 103:
-//                    managerFacade.actionByCommand(choice);
-//                    break;
-//                case 104:
-//                    managerFacade.case104();
-//                    break;
-//
-//                case 105:
-//                    managerFacade.case105();
-//                    break;
                 default:
                     System.out.println("\nPlease enter a valid choice in range 0-9, 99-105!");
                     break;

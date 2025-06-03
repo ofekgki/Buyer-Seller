@@ -10,11 +10,13 @@ public class SQL_HELPER {
     private final ManagerBuyer managerBuyer;
     private final ManagerSeller managerSeller;
     private final ManagerProduct managerProduct;
+    private final ManagerFacade managerFacade;
     private final Connection connection = DBConnection.getConnection();
     private SQL_HELPER() {
         managerBuyer = ManagerBuyer.getInstance();
         managerSeller = ManagerSeller.getInstance();
         managerProduct = ManagerProduct.getInstance();
+        managerFacade = ManagerFacade.getInstance();
     }
 
     public static SQL_HELPER getInstance() {
@@ -28,15 +30,14 @@ public class SQL_HELPER {
         loadSeller();
         loadBuyer();
         loadProduct();
+
     }
 
     private void loadProduct() {
         try {
-
             Connection conn = DBConnection.getConnection();
-
-            String sql = "SELECT p.product_id, p.product_name, p.price, p.category, sp.package_price " +
-                    "FROM Product p LEFT JOIN SpecialPackage sp ON p.product_id = sp.product_id";
+            String sql = "SELECT p.product_id, p.product_name, p.price, p.category, p.seller_id, sp.package_price " +
+                    "FROM Product p LEFT JOIN SpecialPackage sp ON p.product_id = sp.product_id AND p.seller_id = sp.seller_id";
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
 
@@ -45,6 +46,7 @@ public class SQL_HELPER {
                 String name = rs.getString("product_name");
                 double price = rs.getDouble("price");
                 String categoryStr = rs.getString("category");
+                int sellerId = rs.getInt("seller_id");
                 Category category = Category.valueOf(categoryStr.toUpperCase());
                 Double specialPrice = rs.getObject("package_price") != null ? rs.getDouble("package_price") : null;
 
@@ -56,15 +58,18 @@ public class SQL_HELPER {
                 }
 
                 managerProduct.addtolist(product);
-            }
 
+
+                Seller seller = managerSeller.getSellerById(sellerId);
+                if (seller != null) {
+                    seller.addProduct(product); //לוודא
+                }
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
-
     private void loadSeller() {
         try {
             Statement my_stmt = connection.createStatement();
