@@ -73,22 +73,35 @@ public class ManagerFacade implements Manageable {
     }
 
     public void addProductBuyer(int buyerIndex, int sellerIndex, int productIndex) {
-//        Product p1;
-//        if (managerSeller.getSellers()[sellerIndex].getProducts()[productIndex] instanceof ProductSpecialPackage) {
-//            p1 = fPro.createProduct(managerSeller.getSellers()[sellerIndex].getProducts()[productIndex].getProductName(),
-//                    managerSeller.getSellers()[sellerIndex].getProducts()[productIndex].getProductPrice(),
-//                    managerSeller.getSellers()[sellerIndex].getProducts()[productIndex].getCategory().ordinal(),
-//                    ((ProductSpecialPackage) managerSeller.getSellers()[sellerIndex].getProducts()[productIndex]).getSpecialPackagePrice());
-//
-//        } else {
-//
-//            p1 = fPro.createProduct(managerSeller.getSellers()[sellerIndex].getProducts()[productIndex].getProductName(),
-//                    managerSeller.getSellers()[sellerIndex].getProducts()[productIndex].getProductPrice(),
-//                    managerSeller.getSellers()[sellerIndex].getProducts()[productIndex].getCategory().ordinal(),
-//                    0);
-//
-//        }
-//        managerBuyer.getBuyers()[buyerIndex].getCurrentCart().addProductToCart(p1);
+        Product p1;
+
+        Product selectedProduct = managerSeller.getSellers()
+                .get(sellerIndex)
+                .getProducts()
+                .get(productIndex);
+
+        if (selectedProduct instanceof ProductSpecialPackage) {
+            p1 = fPro.createProduct(
+                    selectedProduct.getProductId(),
+                    selectedProduct.getProductName(),
+                    selectedProduct.getProductPrice(),
+                    selectedProduct.getCategory().ordinal(),
+                    ((ProductSpecialPackage) selectedProduct).getSpecialPackagePrice()
+            );
+        } else {
+            p1 = fPro.createProduct(
+                    selectedProduct.getProductId(),
+                    selectedProduct.getProductName(),
+                    selectedProduct.getProductPrice(),
+                    selectedProduct.getCategory().ordinal(),
+                    0
+            );
+        }
+
+        managerBuyer.getBuyers()
+                .get(buyerIndex)
+                .getCurrentCart()
+                .addProductToCart(p1);
     }
 
 

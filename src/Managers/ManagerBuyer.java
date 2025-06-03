@@ -62,7 +62,7 @@ public class ManagerBuyer implements BuyerInterface {
 	public String chooseValidBuyer(String indexInput) {
 		try {
 			int index = Integer.parseInt(indexInput);
-			if (index > numberOfBuyers || index <= 0)
+			if (index > list_buyers.size() || index <= 0)
 				throw new IndexOutOfBoundsException(ExceptionsMessages.INVALID_BUYER_INDEX.getExceptionMessage());
 		} catch (IndexOutOfBoundsException e) {
 			return e.getMessage();

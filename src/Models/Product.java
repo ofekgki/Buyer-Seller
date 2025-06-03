@@ -46,10 +46,14 @@ public class Product {
         return Objects.hash(productName, productPrice);
     }
 
+
+
     public double getProductPrice() {
         return productPrice;
     }
-
+    public int getProductId() {
+        return id;
+    }
     @Override
     public String toString() {
         return "Product name: " + productName +

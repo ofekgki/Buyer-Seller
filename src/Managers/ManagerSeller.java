@@ -57,7 +57,7 @@ public class ManagerSeller implements SellerInterface {
     public String chooseValidSeller(String indexInput) {
         try {
             int index = Integer.parseInt(indexInput);
-            if (index > numberOfSellers || index <= 0)
+            if (index > list_seller.size() || index <= 0)
                 throw new IndexOutOfBoundsException(ExceptionsMessages.INVALID_SELLER_INDEX.getExceptionMessage());
         } catch (IndexOutOfBoundsException e) {
             return e.getMessage();

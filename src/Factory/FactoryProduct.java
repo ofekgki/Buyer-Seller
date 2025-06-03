@@ -11,14 +11,14 @@ public class FactoryProduct {
     public Product createProduct(int id,String productName, double productPrice, int categoryIndex, double specialPackagePrice) {
 
          
-//         if(specialPackagePrice != 0  )
-//
-//         return new ProductSpecialPackage(id,productName, productPrice, Category.values()[categoryIndex], specialPackagePrice);
-//
-//         else {
-//       	  return new Product(id,productName, productPrice, Category.values()[categoryIndex - 1]);
-//         }
-		 return null;
+         if(specialPackagePrice != 0  )
+
+         return new ProductSpecialPackage(id,productName, productPrice, Category.values()[categoryIndex], specialPackagePrice);
+
+         else {
+       	  return new Product(id,productName, productPrice, Category.values()[categoryIndex]);
+         }
+
          
      }
  }

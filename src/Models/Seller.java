@@ -5,17 +5,17 @@ import java.util.*;
 public class Seller extends User {
 
     private List<Product> products = new ArrayList<>();
-    private int numOfProducts;
+    //private int numOfProducts;
     private int seller_id;
 
     public Seller(int id, String userName, String password) {
         super(userName, password);
         seller_id = id;
-        numOfProducts = 0;
+
     }
 
     public int getNumOfProducts() {
-        return numOfProducts;
+        return products.size();
     }
 
     public List<Product>  getProducts() {
