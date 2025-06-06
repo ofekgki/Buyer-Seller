@@ -6,6 +6,11 @@ public class Buyer extends User {
 
     private static final int SIZE_INCREASE = 2;
     private final Address address;
+
+    public int getBuyer_id() {
+        return buyer_id;
+    }
+
     private Cart currentCart;
     private Cart[] historyCart;
     private int historyCartsNum;

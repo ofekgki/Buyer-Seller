@@ -233,4 +233,12 @@ public class ManagerBuyer implements BuyerInterface {
 	}
 
 
+	public Buyer getBuyerById(int buyerId) {
+		for(Buyer buyer : list_buyers){
+			if(buyer.getBuyer_id() == buyerId){
+				return buyer;
+			}
+		}
+		return null;
+	}
 }

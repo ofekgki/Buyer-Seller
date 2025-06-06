@@ -10,7 +10,7 @@ import Models.*;
 import java.util.*;
 
 public class ManagerFacade implements Manageable {
-
+    private final SQL_HELPER sqlHelper;
     private final ManagerBuyer managerBuyer;
     private final ManagerSeller managerSeller;
     private final ManagerProduct managerProduct;
@@ -24,6 +24,7 @@ public class ManagerFacade implements Manageable {
 
 
     private ManagerFacade() {
+        sqlHelper = SQL_HELPER.getInstance();
         managerBuyer = ManagerBuyer.getInstance();
         managerSeller = ManagerSeller.getInstance();
         managerProduct = ManagerProduct.getInstance();
@@ -75,10 +76,7 @@ public class ManagerFacade implements Manageable {
     public void addProductBuyer(int buyerIndex, int sellerIndex, int productIndex) {
         Product p1;
 
-        Product selectedProduct = managerSeller.getSellers()
-                .get(sellerIndex)
-                .getProducts()
-                .get(productIndex);
+        Product selectedProduct = managerSeller.getSellers().get(sellerIndex).getProducts().get(productIndex);
 
         if (selectedProduct instanceof ProductSpecialPackage) {
             p1 = fPro.createProduct(
@@ -222,7 +220,14 @@ public class ManagerFacade implements Manageable {
         } while (message != null);
 
         int productIndex = Integer.parseInt(input);
-        addProductBuyer(buyerIndex, sellerIndex, productIndex - 1); // הנחה: הפונקציה כבר תומכת ב-ArrayList
+        productIndex -=1;
+        addProductBuyer(buyerIndex, sellerIndex, productIndex); // הנחה: הפונקציה כבר תומכת ב-ArrayList
+
+        Buyer buyer = managerBuyer.getBuyers().get(buyerIndex);
+        Product product = managerSeller.getSellers().get(sellerIndex).getProducts().get(productIndex);
+        Seller seller = managerSeller.getSellers().get(sellerIndex);
+        sqlHelper.addProductToCartInDatabase(buyer,product,seller);
+
         System.out.println("Product added successfully to cart.");
     }
 
