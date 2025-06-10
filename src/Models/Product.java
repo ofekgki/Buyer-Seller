@@ -11,16 +11,17 @@ public class Product {
     private final Category category;
     
     
-    public Product(int id,String productName, double productPrice, Category category) {
+    public Product(String productName, double productPrice, Category category) {
         this.productName = productName;
         this.productPrice = productPrice;
-        this.id = id;
         this.category = category;
     }
 
     public String getProductName() {
         return productName;
     }
+
+
 
     public Product(Product other) {
         this.productName = other.productName;
@@ -51,9 +52,16 @@ public class Product {
     public double getProductPrice() {
         return productPrice;
     }
+
     public int getProductId() {
+
         return id;
     }
+
+    public void setID(int id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "Product name: " + productName +

@@ -8,17 +8,14 @@ public class FactoryProduct {
     private String input;
 
 
-    public Product createProduct(int id,String productName, double productPrice, int categoryIndex, double specialPackagePrice) {
 
-         
-         if(specialPackagePrice != 0  )
+    public Product createSpecialProduct(String name, double price, int categoryIndex, double specialPrice) {
+        Category category = Category.values()[categoryIndex - 1];
+        return new ProductSpecialPackage(name, price, category, specialPrice);
+    }
 
-         return new ProductSpecialPackage(id,productName, productPrice, Category.values()[categoryIndex], specialPackagePrice);
-
-         else {
-       	  return new Product(id,productName, productPrice, Category.values()[categoryIndex]);
-         }
-
-         
-     }
- }
+    public Product createRegularProduct(String name, double price, int categoryIndex) {
+        Category category = Category.values()[categoryIndex - 1];
+        return new Product(name, price, category);
+    }
+}

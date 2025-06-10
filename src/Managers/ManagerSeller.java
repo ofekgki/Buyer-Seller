@@ -16,8 +16,6 @@ public class ManagerSeller implements SellerInterface {
     private String input;
     private String msg;
 
-    private int numberOfSellers;
-
     private int last_id;
 
     private final Comparator<Seller> comparatorSeller;
@@ -42,7 +40,7 @@ public class ManagerSeller implements SellerInterface {
     }
 
     public int getNumberOfSellers() {
-        return numberOfSellers;
+        return list_seller.size();
     }
 
     public String isExistSeller(String name) {

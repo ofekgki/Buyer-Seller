@@ -5,8 +5,8 @@ import Enums.Category;
 public class ProductSpecialPackage extends Product {
     private final double specialPackagePrice;
 
-    public ProductSpecialPackage(int id,String productName, double productPrice, Category category, double specialPackagePrice) {
-        super(id,productName, productPrice, category);
+    public ProductSpecialPackage(String productName, double productPrice, Category category, double specialPackagePrice) {
+        super(productName, productPrice, category);
         this.specialPackagePrice = specialPackagePrice;
     }
 

@@ -54,7 +54,7 @@ public class Main {
 
                     break;
                 case 2:
-                   // managerFacade.case2();
+                    managerFacade.case2();
                     break;
                 case 3:
                     managerFacade.addProductSeller();
@@ -78,17 +78,11 @@ public class Main {
                     managerFacade.case9();
                     break;
                 default:
-                    System.out.println("\nPlease enter a valid choice in range 0-9, 99-105!");
+                    System.out.println("\nPlease enter a valid choice in range 0-9!");
                     break;
             }
         } while (choice != 0);
 
-        try{
-            connection.close();
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
 

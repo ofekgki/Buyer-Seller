@@ -1,10 +1,9 @@
 package Models;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 public class Buyer extends User {
 
-    private static final int SIZE_INCREASE = 2;
     private final Address address;
 
     public int getBuyer_id() {
@@ -12,23 +11,21 @@ public class Buyer extends User {
     }
 
     private Cart currentCart;
-    private Cart[] historyCart;
-    private int historyCartsNum;
+    private ArrayList<Cart> historyCart = new ArrayList<>();
+
     private int buyer_id;
 
     public Buyer(int id,String userName, String password, Address address) {
         super(userName, password);
         this.buyer_id = id;
         this.address = address;
-        currentCart = new Cart();
-        historyCart = new Cart[0];
     }
 
     public int getHistoryCartsNum() {
-        return historyCartsNum;
+        return historyCart.size();
     }
 
-    public Cart[] getHistoryCart() {
+    public ArrayList<Cart> getHistoryCart() {
         return historyCart;
     }
 
@@ -40,18 +37,10 @@ public class Buyer extends User {
         return currentCart;
     }
 
-    public void payAndMakeHistoryCart(){
+    public void payAndMakeHistoryCart(int lastID){
         Cart hCart = new Cart(currentCart);
-        if (historyCart.length == historyCartsNum) {
-            if (historyCart.length == 0) {
-                historyCart = Arrays.copyOf(historyCart, 1);
-            }
-            else {
-                historyCart = Arrays.copyOf(historyCart, historyCart.length * SIZE_INCREASE);
-            }
-        }
-        historyCart[historyCartsNum++] = hCart;
-        currentCart = new Cart();
+        historyCart.add(hCart);
+        currentCart = new Cart(lastID);
     }
 
     @Override
@@ -59,20 +48,24 @@ public class Buyer extends User {
         StringBuilder sb = new StringBuilder();
         sb.append("Buyer details:\n").append("   Name: ").append(userName).append("\n")
                 .append("   Address: ").append(address.toString()).append("\n\n");
-        if (currentCart.getNumOfProducts() == 0) {
+        if (currentCart.getSize() == 0) {
             sb.append("Cart is empty\n");
         } else {
             sb.append(currentCart.toString());
         }
-        if (historyCartsNum == 0) {
+        if (historyCart.size() == 0) {
             return sb.append("No history carts.\n\n").toString();
         }
         sb.append("\nHistory carts details : \n");
-        for (int i = 0; i < historyCartsNum; i++) {
-            sb.append(i+1).append(") ").append(historyCart[i].toString())
-                    .append(historyCart[i].getDate()).append("\n\n");
+        for (int i = 0; i < historyCart.size(); i++) {
+            sb.append(i+1).append(") ").append(historyCart.get(i).toString())
+                    .append(historyCart.get(i).getDate()).append("\n\n");
         }
         return sb.toString();
+    }
+
+    public void createNewCart(int lastID) {
+        this.currentCart = new Cart(lastID);
     }
 }
 

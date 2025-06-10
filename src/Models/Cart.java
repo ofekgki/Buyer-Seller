@@ -1,58 +1,59 @@
 package Models;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
 public class Cart {
     private static final int SIZE_INCREASE = 2;
-    private Product[] products;
-    private int numOfProducts;
+    private ArrayList<Product> products = new ArrayList<>();
     private final Date date;
     private Double totalPrice;
+    private int id;
 
     public Date getDate() {
         return date;
     }
 
-    public int getNumOfProducts() {
-        return numOfProducts;
+    public void setId(int id){
+        this.id = id;
     }
+
+    public int getId(){
+        return id;
+    }
+
 
     public Cart(Cart other) {    // copy constructor cart
         products = other.products;
         date = new Date();
         totalPrice = other.totalPrice;
-        numOfProducts = other.numOfProducts;
     }
 
-    public Cart() {
-        this.products = new Product[0];
+    public Cart(int id) {
         this.date = new Date();
         this.totalPrice = 0.0;
-        this.numOfProducts = 0;
+        this.id = id;
     }
-
     public void addProductToCart (Product p1) {
-        if (numOfProducts == products.length) {
-            if (numOfProducts == 0) {
-                products = Arrays.copyOf(products, 1);
-            } else {
-                products = Arrays.copyOf(products, products.length * SIZE_INCREASE);
-            }
-        }
-        products[numOfProducts++] = p1;
+
+        products.add(p1);
         totalPrice += p1.getProductPrice();
         if (p1 instanceof ProductSpecialPackage) {
             totalPrice += ((ProductSpecialPackage) p1).getSpecialPackagePrice();
         }
     }
 
+    public int getSize(){
+        return products.size();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Cart details: \n");
-        for (int i = 0; i < numOfProducts; i++) {
-            sb.append("   ").append(i + 1).append(") ").append(products[i].toString()).append("\n");
+        for (int i = 0; i < products.size(); i++) {
+            sb.append("   ").append(i + 1).append(") ").append(products.get(i).toString()).append("\n");
         }
         sb.append("------------------\n").append("total : ").append(totalPrice)
                 .append("\n------------------\n");

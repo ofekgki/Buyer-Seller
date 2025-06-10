@@ -1,31 +1,22 @@
 package Managers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.*;
 
 import Comparators.CompareBuyersByName;
 import Enums.ExceptionsMessages;
 import Exceptions.EmptyCartPayException;
 import Factory.FactoryUser;
-import Models.Address;
 import Models.Buyer;
-import Models.Seller;
 
 public class ManagerBuyer implements BuyerInterface {
 
 	private String input;
 	private String msg;
-	
+
 	private FactoryUser factoryUser;
 	
-	private final int SIZE_INCREASE = 2;
-	
-	//private Buyer[] buyers;
 
 	private final ArrayList<Buyer> list_buyers = new ArrayList<>();
-
-	private int numberOfBuyers;
 
 	private final Comparator<Buyer> comparatorBuyer;
 
@@ -47,9 +38,7 @@ public class ManagerBuyer implements BuyerInterface {
 		return list_buyers;
 	}
 
-	public int getNumberOfBuyers() {
-		return numberOfBuyers;
-	}
+
 
 	public String isExistBuyer(String name) {
 		for (Buyer buyer : list_buyers) {
@@ -100,15 +89,17 @@ public class ManagerBuyer implements BuyerInterface {
 		return sb.toString();
 	}
 
-	public String pay(int buyerIndex) {
+	public String pay(int buyerIndex, int lastID) {
 		try {
-			if (list_buyers.get(buyerIndex).getCurrentCart().getNumOfProducts() == 0)
+			if (list_buyers.get(buyerIndex).getCurrentCart().getSize() == 0)
 				throw new EmptyCartPayException(list_buyers.get(buyerIndex).getUserName());
 		} catch (EmptyCartPayException e) {
 			return e.getMessage();
 		}
 
-		list_buyers.get(buyerIndex).payAndMakeHistoryCart();
+		list_buyers.get(buyerIndex).payAndMakeHistoryCart(lastID);
+
+
 
 		return """
 				 ____   _ __   ____  __ _____ _   _ _____                              \s
@@ -124,7 +115,7 @@ public class ManagerBuyer implements BuyerInterface {
 
 	public void replaceCarts(int historyCartIndex, int buyerIndex) {
 		list_buyers.get(buyerIndex).setCurrentCart(
-				list_buyers.get(buyerIndex).getHistoryCart()[historyCartIndex]
+				list_buyers.get(buyerIndex).getHistoryCart().get(historyCartIndex)
 		);
 	}
 
@@ -145,34 +136,35 @@ public class ManagerBuyer implements BuyerInterface {
 		return Integer.parseInt(input) - 1;
 	}
 
-	public void paymentForBuyer() {
-		if (getNumberOfBuyers() == 0) {
+	public int paymentForBuyer(int lastID) {
+		if (list_buyers.size() == 0) {
 			System.out.println("Haven't buyers yet, cannot be proceed. return to Menu.");
-			return;
+			return -1;
 		}
 		System.out.println("Please choose buyer from list to process checkout: (Enter -1 to return main menu)");
 		int buyerIndex = chooseBuyer();
 		if (buyerIndex == -1)
-			return;
-		System.out.println(pay(buyerIndex));
+			return -1 ;
+		System.out.println(pay(buyerIndex,lastID));
 
+		return buyerIndex + 1;
 	}
 
-	public void updateCartHistory() {
+	public HashMap<Integer,Integer> updateCartHistory() {
 		if (list_buyers.isEmpty()) {
 			System.out.println("Haven't buyers yet, cannot be proceed. return to Menu.");
-			return;
+			return null;
 		}
 
-		int buyerIndex = chooseBuyer();  // הנחה: הפונקציה מחזירה אינדקס תקף ב-ArrayList
+		int buyerIndex = chooseBuyer();
 		if (buyerIndex == -1)
-			return;
+			return null;
 
 		Buyer buyer = list_buyers.get(buyerIndex);
 
 		if (buyer.getHistoryCartsNum() == 0) {
 			System.out.println("\nHistory cart's are empty for this buyer, cannot proceed. return to main menu.");
-			return;
+			return null;
 		}
 
 		System.out.println(buyer.toString());
@@ -180,17 +172,20 @@ public class ManagerBuyer implements BuyerInterface {
 		do {
 			input = UserInput.stringInput("Please choose cart number from history carts:\nIf you have products in your current cart - they will be replaced.");
 			if (input.equals("-1"))
-				return;
+				return null;
 
-			msg = isValidHistoryCartIndex(input, buyerIndex);  // הנחה: הפונקציה מותאמת ל־ArrayList
+			msg = isValidHistoryCartIndex(input, buyerIndex);
 			if (msg != null) {
 				System.out.println(msg);
 			}
 		} while (msg != null);
 
 		int historyCartIndex = Integer.parseInt(input);
-		replaceCarts(historyCartIndex - 1, buyerIndex);  // הנחה: גם replaceCarts מותאמת ל־ArrayList
+		replaceCarts(historyCartIndex - 1, buyerIndex);
 		System.out.println("Your current cart updated successfully.");
+		HashMap<Integer,Integer> map = new HashMap<>();
+		map.put(buyerIndex,historyCartIndex);
+		return map;
 	}
 
 	public String isValidHistoryCartIndex(String indexCartInput, int buyerIndex) {
@@ -210,17 +205,6 @@ public class ManagerBuyer implements BuyerInterface {
 		}
 		return null;
 	}
-	
-//	public void addBuyerTest(String name, String password, Address address) {
-//		Buyer buyer = new Buyer(name, password, address);
-//		if (buyers.length == numberOfBuyers) {
-//			if (buyers.length == 0) {
-//				buyers = Arrays.copyOf(buyers, 1);
-//			}
-//			buyers = Arrays.copyOf(buyers, buyers.length * SIZE_INCREASE);
-//		}
-//		buyers[numberOfBuyers++] = buyer;
-//	}
 
 	public void addBuyer(Buyer buyer) {
 		list_buyers.add(buyer);
