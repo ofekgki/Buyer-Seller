@@ -113,10 +113,13 @@ public class ManagerBuyer implements BuyerInterface {
 				            |____/ \\___/ \\____|____/____/|_____|____/|_|    \\___/|_____|""";
 	}
 
-	public void replaceCarts(int historyCartIndex, int buyerIndex) {
+	public int replaceCarts(int historyCartIndex, int buyerIndex) {
+		int id = list_buyers.get(buyerIndex).getHistoryCart().get(historyCartIndex).getId();
+
 		list_buyers.get(buyerIndex).setCurrentCart(
 				list_buyers.get(buyerIndex).getHistoryCart().get(historyCartIndex)
 		);
+		return id;
 	}
 
 	public int chooseBuyer() {
@@ -171,6 +174,7 @@ public class ManagerBuyer implements BuyerInterface {
 
 		do {
 			input = UserInput.stringInput("Please choose cart number from history carts:\nIf you have products in your current cart - they will be replaced.");
+
 			if (input.equals("-1"))
 				return null;
 
@@ -181,7 +185,7 @@ public class ManagerBuyer implements BuyerInterface {
 		} while (msg != null);
 
 		int historyCartIndex = Integer.parseInt(input);
-		replaceCarts(historyCartIndex - 1, buyerIndex);
+		historyCartIndex = replaceCarts(historyCartIndex - 1, buyerIndex);
 		System.out.println("Your current cart updated successfully.");
 		HashMap<Integer,Integer> map = new HashMap<>();
 		map.put(buyerIndex,historyCartIndex);

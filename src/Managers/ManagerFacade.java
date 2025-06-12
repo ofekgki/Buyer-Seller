@@ -1,6 +1,5 @@
 package Managers;
 
-import Enums.Category;
 import Enums.ExceptionsMessages;
 import Factory.FactoryProduct;
 import Factory.FactoryUser;
@@ -52,6 +51,7 @@ public class ManagerFacade implements Manageable {
         System.out.println("7) Seller's details");
         System.out.println("8) Product's by category");
         System.out.println("9) Replace current cart with cart from history");
+        System.out.println("10) delete Active cart");
         System.out.println("Please enter your choice: ");
     }
 
@@ -76,7 +76,6 @@ public class ManagerFacade implements Manageable {
 
     public void addProductBuyer(int buyerIndex, int sellerIndex, int productIndex) {
         Product p1;
-
         Product selectedProduct = managerSeller.getSellers().get(sellerIndex).getProducts().get(productIndex);
 
         if (selectedProduct instanceof ProductSpecialPackage) {
@@ -91,13 +90,18 @@ public class ManagerFacade implements Manageable {
                     selectedProduct.getCategory().ordinal()
             );
         }
-
-        managerBuyer.getBuyers()
-                .get(buyerIndex)
-                .getCurrentCart()
-                .addProductToCart(p1);
+        if(managerBuyer.getBuyers().get(buyerIndex).getCurrentCart() != null) {
+            managerBuyer.getBuyers()
+                    .get(buyerIndex)
+                    .getCurrentCart()
+                    .addProductToCart(p1);
+        }
+        else
+        {
+            managerBuyer.getBuyers().get(buyerIndex).createNewCart(sqlHelper.getLastCartID());
+            managerBuyer.getBuyers().get(buyerIndex).getCurrentCart().addProductToCart(p1);
+        }
     }
-
 
     public void addProductSeller() {
         if (managerSeller.getNumberOfSellers() == 0) {
@@ -165,7 +169,6 @@ public class ManagerFacade implements Manageable {
         System.out.println("Product added successfully.");
     }
 
-
     public void addProductToSeller(Product p1, int sellerIndex) {
         // הוספה למוכר
         managerSeller.getSellers().get(sellerIndex).addProduct(p1);
@@ -191,8 +194,9 @@ public class ManagerFacade implements Manageable {
         if (buyerIndex == -1)
             return;
 
+        buyerIndex ++;
         if (managerBuyer.getBuyerById(buyerIndex).getCurrentCart() == null) {
-            managerBuyer.getBuyerById(buyerIndex).createNewCart(sqlHelper.getLastID());
+            managerBuyer.getBuyerById(buyerIndex).createNewCart(sqlHelper.getLastCartID());
         }
 
         int sellerIndex = managerSeller.chooseSeller();
@@ -220,7 +224,7 @@ public class ManagerFacade implements Manageable {
 
         int productIndex = Integer.parseInt(input);
         productIndex -= 1;
-        addProductBuyer(buyerIndex, sellerIndex, productIndex);
+        addProductBuyer(--buyerIndex, sellerIndex, productIndex);
 
         Buyer buyer = managerBuyer.getBuyers().get(buyerIndex);
         Product product = managerSeller.getSellers().get(sellerIndex).getProducts().get(productIndex);
@@ -286,10 +290,9 @@ public class ManagerFacade implements Manageable {
         }
     }
 
-
     public void case5() {
-        int buyerIndex = managerBuyer.paymentForBuyer(sqlHelper.getLastID());
-        sqlHelper.UpdateCart(buyerIndex);
+        int buyerIndex = managerBuyer.paymentForBuyer(sqlHelper.getLastCartID());
+        sqlHelper.UpdateCartPay(buyerIndex);
 
 
     }
@@ -310,27 +313,54 @@ public class ManagerFacade implements Manageable {
     }
 
     public void case9() {
-        HashMap<Integer, Integer> mapTemp = managerBuyer.updateCartHistory();
-        if (mapTemp != null) {
-            Map.Entry<Integer, Integer> entry = mapTemp.entrySet().iterator().next();
-            int buyerId = entry.getKey().intValue() + 1;
-            int cartId = entry.getValue().intValue();
-            sqlHelper.UpdateHistory(buyerId, cartId);
+        String msg;
+        int buyerIndex = managerBuyer.chooseBuyer() + 1 ;
+        Buyer temp = managerBuyer.getBuyerById(buyerIndex);
+        buyerIndex = temp.getBuyer_id() -1 ;
 
-        } else {
-            System.out.println("Error in Replace Cart");
+        if (temp.getHistoryCartsNum() == 0) {
+            System.out.println("\nHistory cart's are empty for this buyer, cannot proceed. return to main menu.");
+            return;
         }
+
+        if (temp.getCurrentCart() != null) {
+            sqlHelper.deleteCartAndProducts(temp.getCurrentCart().getId());
+            temp.deleteCart();
+        }
+
+        System.out.println(temp.toString());
+        do {
+            input = UserInput.stringInput("Please choose cart number from history carts:\nIf you have products in your current cart - they will be replaced.");
+
+            if (input.equals("-1"))
+                return;
+
+            msg = managerBuyer.isValidHistoryCartIndex(input,buyerIndex);
+            if (msg != null) {
+                System.out.println(msg);
+            }
+        } while (msg != null);
+        int historyCartIndex = Integer.parseInt(input) - 1;
+        managerBuyer.getBuyers().get(buyerIndex).setCurrentCartFromHistory(
+                managerBuyer.getBuyers().get(buyerIndex).getHistoryCart().get(historyCartIndex)
+        );
+
+       sqlHelper.InsertUpdateFromHistory(temp.getBuyer_id(),temp.getCurrentCart().getId(),temp.getCurrentCart().getDate()
+               ,temp.getCurrentCart().getTotalPrice());
+
+        System.out.println("Successfully update cart.");
+
     }
 
 
-    public void case_2() {
-        System.out.println("Seller");
-        managerSeller.showlist();
-        System.out.println("Buyer");
-        managerBuyer.showlist();
-        System.out.println("product");
-        managerProduct.show_list();
+    public void case10() {
+
+        int buyerIndex = managerBuyer.chooseBuyer();
+        Buyer buyer = managerBuyer.getBuyers().get(buyerIndex);
+        int cartId = buyer.getCurrentCart().getId();
+        buyer.createNewCart(sqlHelper.getLastCartID());
+        sqlHelper.deleteCartAndProducts(cartId);
+
+
     }
-
-
 }

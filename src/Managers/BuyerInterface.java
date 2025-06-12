@@ -19,7 +19,7 @@ public interface BuyerInterface {
 	  
 	  String pay(int buyerIndex, int lastID);
 	  
-	  void replaceCarts(int historyCartIndex, int buyerIndex);
+	  int replaceCarts(int historyCartIndex, int buyerIndex);
 	  
 	    String isValidHistoryCartIndex(String indexCartInput, int buyerIndex);
 

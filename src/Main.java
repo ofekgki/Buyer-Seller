@@ -77,6 +77,9 @@ public class Main {
                 case 9:
                     managerFacade.case9();
                     break;
+                case 10:
+                    managerFacade.case10();
+                    break;
                 default:
                     System.out.println("\nPlease enter a valid choice in range 0-9!");
                     break;

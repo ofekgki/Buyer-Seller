@@ -5,6 +5,7 @@ import Models.*;
 
 import java.sql.*;
 import java.util.*;
+import java.util.Date;
 
 public class SQL_HELPER {
 
@@ -80,8 +81,10 @@ public class SQL_HELPER {
                 Product product;
                 if (packagePrice > 0) {
                     product = new ProductSpecialPackage(productName, price, category, packagePrice);
+                    product.setID(productId);
                 } else {
                     product = new Product(productName, price, category);
+                    product.setID(productId);
                 }
 
                 // If this buyer doesn't have a cart yet, create a new one
@@ -110,22 +113,23 @@ public class SQL_HELPER {
 
     private void loadCartHistory() {
         try {
-
             Connection conn = DBConnection.getConnection();
             String sql = """
-                        SELECT sc.cart_id, sc.buyer_id, p.product_id, p.product_name, p.price, p.category, 
-                               sp.package_price
-                        FROM ShoppingCart sc
-                        JOIN CartProduct ci ON sc.cart_id = ci.cart_id
-                        JOIN Product p ON ci.product_id = p.product_id
-                        LEFT JOIN SpecialPackage sp ON p.product_id = sp.product_id
-                        WHERE sc.status = 'COMPLETED'
-                        ORDER BY sc.cart_id
-                    """;
+                    SELECT sc.cart_id, sc.buyer_id, p.product_id, p.product_name, p.price, p.category, 
+                           sp.package_price
+                    FROM ShoppingCart sc
+                    JOIN CartProduct ci ON sc.cart_id = ci.cart_id
+                    JOIN Product p ON ci.product_id = p.product_id
+                    LEFT JOIN SpecialPackage sp ON p.product_id = sp.product_id
+                    WHERE sc.status = 'COMPLETED'
+                    ORDER BY sc.cart_id
+                """;
 
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
-            Map<Integer, Cart> carts = new HashMap<>();
+
+            Map<Integer, Cart> carts = new HashMap<>(); // key = cart_id
+            Map<Integer, Integer> cartIdToBuyerId = new HashMap<>(); // cart_id → buyer_id
 
             while (rs.next()) {
                 int cart_id = rs.getInt("cart_id");
@@ -141,23 +145,32 @@ public class SQL_HELPER {
                 Product product;
                 if (packagePrice > 0) {
                     product = new ProductSpecialPackage(productName, price, category, packagePrice);
+                    product.setID(productId);
                 } else {
                     product = new Product(productName, price, category);
+                    product.setID(productId);
                 }
 
-                if (!carts.containsKey(buyerId)) {
-                    carts.put(buyerId, new Cart(cart_id));
+                // Create cart if not yet created for this cart_id
+                if (!carts.containsKey(cart_id)) {
+                    carts.put(cart_id, new Cart(cart_id));
+                    cartIdToBuyerId.put(cart_id, buyerId); // remember buyer for this cart
                 }
 
-                carts.get(buyerId).addProductToCart(product);
+                // Add product to this cart
+                carts.get(cart_id).addProductToCart(product);
             }
 
+            // Now assign carts to correct buyers
             for (Map.Entry<Integer, Cart> entry : carts.entrySet()) {
-                int buyerId = entry.getKey();
+                int cartId = entry.getKey();
                 Cart cart = entry.getValue();
+
+                int buyerId = cartIdToBuyerId.get(cartId); // get the buyer of this cart
                 Buyer buyer = managerBuyer.getBuyerById(buyerId);
+
                 if (buyer != null) {
-                    buyer.getHistoryCart().add(cart);
+                    buyer.getHistoryCart().add(cart); // add the cart to buyer's history
                 }
             }
 
@@ -175,7 +188,7 @@ public class SQL_HELPER {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                int id = rs.getInt("product_id");
+                int productId = rs.getInt("product_id");
                 String name = rs.getString("product_name");
                 double price = rs.getDouble("price");
                 String categoryStr = rs.getString("category");
@@ -186,8 +199,10 @@ public class SQL_HELPER {
                 Product product;
                 if (specialPrice != null) {
                     product = new ProductSpecialPackage(name, price, category, specialPrice);
+                    product.setID(productId);
                 } else {
                     product = new Product(name, price, category);
+                    product.setID(productId);
                 }
 
                 product.setID(getProductIdByName(name));
@@ -425,7 +440,7 @@ public class SQL_HELPER {
         }
     }
 
-    public boolean UpdateCart(int buyerIndex) {
+    public boolean UpdateCartPay(int buyerIndex) {
         String sql = "UPDATE shoppingcart SET status = 'COMPLETED' WHERE buyer_id = ? AND status = 'ACTIVE'";
 
         try (Connection connection = DBConnection.getConnection();
@@ -439,21 +454,16 @@ public class SQL_HELPER {
         }
     }
 
-    public void UpdateHistory(int buyerId, int cartId) {
-        String deleteSql = "DELETE FROM shoppingcart WHERE buyer_id = ? AND status = 'ACTIVE'";
-        String updateSql = "UPDATE shoppingcart SET status = 'ACTIVE' WHERE buyer_id = ? AND cart_id = ?";
+    public void InsertUpdateFromHistory(int buyerId, int cartId, Date date, double total_price) {
 
+        String updateSql = "INSERT INTO shoppingcart (cart_id,buyer_id,cart_date,status,total_price) VALUES (?,?,?,'ACTIVE',?)";
         try (Connection connection = DBConnection.getConnection()) {
-            // First DELETE active cart
-            try (PreparedStatement deleteStmt = connection.prepareStatement(deleteSql)) {
-                deleteStmt.setInt(1, buyerId);
-                deleteStmt.executeUpdate();
-            }
-
             // Then UPDATE selected history cart to ACTIVE
             try (PreparedStatement updateStmt = connection.prepareStatement(updateSql)) {
-                updateStmt.setInt(1, buyerId);
-                updateStmt.setInt(2, cartId);
+                updateStmt.setInt(1, cartId);
+                updateStmt.setInt(2, buyerId);
+                updateStmt.setDate(3,new java.sql.Date(date.getTime()));
+                updateStmt.setDouble(4, total_price);
                 updateStmt.executeUpdate();
             }
         } catch (SQLException e) {
@@ -461,8 +471,7 @@ public class SQL_HELPER {
         }
     }
 
-
-    public int getLastID() {
+    public int getLastCartID() {
         String sql = "SELECT MAX(cart_id) FROM shoppingcart";
 
         try (Connection connection = DBConnection.getConnection();
@@ -479,6 +488,59 @@ public class SQL_HELPER {
             throw new RuntimeException(e);
         }
     }
+
+    public void deleteCartAndProducts(int cartId) {
+        // SQL to delete all products from the cart, only if cart is ACTIVE
+        String deleteCartProductsSQL = """
+        DELETE FROM CartProduct 
+        WHERE cart_id = ? AND EXISTS (
+            SELECT 1 FROM ShoppingCart 
+            WHERE cart_id = ? AND status = 'ACTIVE'
+        )
+    """;
+
+        // SQL to delete the cart itself, only if it is ACTIVE
+        String deleteCartSQL = "DELETE FROM ShoppingCart WHERE cart_id = ? AND status = 'ACTIVE'";
+
+        try {
+            Connection connection = DBConnection.getConnection();
+            connection.setAutoCommit(false); // Start transaction
+
+            try (
+                    PreparedStatement ps1 = connection.prepareStatement(deleteCartProductsSQL);
+                    PreparedStatement ps2 = connection.prepareStatement(deleteCartSQL)
+            ) {
+                // Step 1: Delete all products from the active cart
+                ps1.setInt(1, cartId);
+                ps1.setInt(2, cartId); // For the EXISTS subquery
+                ps1.executeUpdate();
+
+                // Step 2: Delete the active cart itself
+                ps2.setInt(1, cartId);
+                int affected = ps2.executeUpdate();
+
+                // Commit only if the cart was actually deleted
+                if (affected > 0) {
+                    connection.commit();
+                } else {
+                    connection.rollback();
+                    System.err.println("Cart is not ACTIVE or does not exist. Nothing was deleted.");
+                }
+
+            } catch (SQLException e) {
+                connection.rollback();
+                System.err.println("Error while deleting cart or its products: " + e.getMessage());
+            } finally {
+                connection.setAutoCommit(true);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error while setting up transaction: " + e.getMessage());
+        }
+    }
+
+
+
 
 }
 

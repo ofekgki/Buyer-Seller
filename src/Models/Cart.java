@@ -1,11 +1,13 @@
 package Models;
 
+import Managers.SQL_HELPER;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
 public class Cart {
-    private static final int SIZE_INCREASE = 2;
+
     private ArrayList<Product> products = new ArrayList<>();
     private final Date date;
     private Double totalPrice;
@@ -23,18 +25,26 @@ public class Cart {
         return id;
     }
 
-
-    public Cart(Cart other) {    // copy constructor cart
+    public Cart(Cart other, int FromHistory) {    // copy constructor cart
         products = other.products;
         date = new Date();
         totalPrice = other.totalPrice;
+        if (FromHistory == 1) {
+            id = SQL_HELPER.getInstance().getLastCartID();
+
+        }
+        else {
+            id = other.getId();
+        }
     }
+
 
     public Cart(int id) {
         this.date = new Date();
         this.totalPrice = 0.0;
         this.id = id;
     }
+
     public void addProductToCart (Product p1) {
 
         products.add(p1);
@@ -46,6 +56,10 @@ public class Cart {
 
     public int getSize(){
         return products.size();
+    }
+
+    public double getTotalPrice(){
+        return totalPrice;
     }
 
     @Override

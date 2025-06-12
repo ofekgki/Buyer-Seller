@@ -12,10 +12,9 @@ public class Buyer extends User {
 
     private Cart currentCart;
     private ArrayList<Cart> historyCart = new ArrayList<>();
-
     private int buyer_id;
 
-    public Buyer(int id,String userName, String password, Address address) {
+    public Buyer(int id, String userName, String password, Address address) {
         super(userName, password);
         this.buyer_id = id;
         this.address = address;
@@ -30,15 +29,15 @@ public class Buyer extends User {
     }
 
     public void setCurrentCart(Cart currentCart) {
-        this.currentCart = currentCart;
+        this.currentCart = new Cart(currentCart, 0);
     }
 
     public Cart getCurrentCart() {
         return currentCart;
     }
 
-    public void payAndMakeHistoryCart(int lastID){
-        Cart hCart = new Cart(currentCart);
+    public void payAndMakeHistoryCart(int lastID) {
+        Cart hCart = new Cart(currentCart, 0);
         historyCart.add(hCart);
         currentCart = new Cart(lastID);
     }
@@ -46,26 +45,47 @@ public class Buyer extends User {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Buyer details:\n").append("   Name: ").append(userName).append("\n")
+        sb.append("Buyer details:\n")
+                .append("   Name: ").append(userName).append("\n")
                 .append("   Address: ").append(address.toString()).append("\n\n");
-        if (currentCart.getSize() == 0) {
+
+
+        if (currentCart == null || currentCart.getSize() == 0) {
             sb.append("Cart is empty\n");
         } else {
             sb.append(currentCart.toString());
         }
-        if (historyCart.size() == 0) {
-            return sb.append("No history carts.\n\n").toString();
+
+
+        if (historyCart == null || historyCart.isEmpty()) {
+            sb.append("No history carts.\n\n");
+        } else {
+            sb.append("\nHistory carts details:\n");
+            for (int i = 0; i < historyCart.size(); i++) {
+                sb.append(i + 1)
+                        .append(") ")
+                        .append(historyCart.get(i).toString())
+                        .append("Date: ")
+                        .append(historyCart.get(i).getDate())
+                        .append("\n\n");
+            }
         }
-        sb.append("\nHistory carts details : \n");
-        for (int i = 0; i < historyCart.size(); i++) {
-            sb.append(i+1).append(") ").append(historyCart.get(i).toString())
-                    .append(historyCart.get(i).getDate()).append("\n\n");
-        }
+
         return sb.toString();
     }
 
+
     public void createNewCart(int lastID) {
         this.currentCart = new Cart(lastID);
+    }
+
+    public void deleteCart() {
+        this.currentCart = null;
+    }
+
+
+    public void setCurrentCartFromHistory(Cart cart) {
+        this.currentCart = new Cart(cart, 1);
     }
 }
 
