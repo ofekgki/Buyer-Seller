@@ -71,8 +71,12 @@ public class ManagerBuyer implements BuyerInterface {
 		sortedBuyers.sort(comparatorBuyer);
 
 		for (int i = 0; i < sortedBuyers.size(); i++) {
-			sb.append(i + 1).append(") ");
+			sb.append(i + 1).append(")	");
+			sb.append("Buyer ID : ");
+			sb.append(getBuyers().get(i).getBuyer_id());
+			sb.append("\n	");
 			sb.append(sortedBuyers.get(i).toString());
+			sb.append("_____________________________________________________________\n");
 		}
 
 		return sb.toString();

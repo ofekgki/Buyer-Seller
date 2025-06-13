@@ -66,10 +66,14 @@ public class Cart {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Cart details: \n");
+        sb.append("Cart ID :")
+                .append(getId())
+                .append("\n");
         for (int i = 0; i < products.size(); i++) {
-            sb.append("   ").append(i + 1).append(") ").append(products.get(i).toString()).append("\n");
+            sb.append("   ").append(i + 1).append(") ")
+                    .append(products.get(i).toString()).append("\n");
         }
-        sb.append("------------------\n").append("total : ").append(totalPrice)
+        sb.append("total : ").append(totalPrice)
                 .append("\n------------------\n");
         return sb.toString();
     }

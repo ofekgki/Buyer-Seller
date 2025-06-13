@@ -46,7 +46,7 @@ public class Buyer extends User {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Buyer details:\n")
-                .append("   Name: ").append(userName).append("\n")
+                .append("      Buyer Name: ").append(userName).append("\n")
                 .append("   Address: ").append(address.toString()).append("\n\n");
 
 
@@ -56,6 +56,7 @@ public class Buyer extends User {
             sb.append(currentCart.toString());
         }
 
+        sb.append("\n");
 
         if (historyCart == null || historyCart.isEmpty()) {
             sb.append("No history carts.\n\n");
@@ -67,6 +68,7 @@ public class Buyer extends User {
                         .append(historyCart.get(i).toString())
                         .append("Date: ")
                         .append(historyCart.get(i).getDate())
+                        .append("\n_______________________________________________________________")
                         .append("\n\n");
             }
         }

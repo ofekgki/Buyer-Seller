@@ -91,10 +91,16 @@ public class ManagerSeller implements SellerInterface {
         for (int i = 0; i < sortedSellers.size(); i++) {
             sb.append(i + 1)
                     .append(") ")
+                    .append("seller ID : ")
+                    .append(getSellers().get(i).getSeller_id())
+                    .append("\n	")
+                    .append("Seller Name :  ")
                     .append(sortedSellers.get(i).getUserName())
                     .append(": ")
                     .append(sortedSellers.get(i).toString())
-                    .append("\n");
+                    .append("\n")
+                    .append("________________________________________________________________________________\n");
+
         }
 
         return sb.toString();
@@ -107,6 +113,8 @@ public class ManagerSeller implements SellerInterface {
                     .append(") ")
                     .append(list_seller.get(i).getUserName())
                     .append("\n");
+
+
         }
         return sb.toString();
     }

@@ -41,8 +41,6 @@ public class Main {
             }
             sc.nextLine();
             switch (choice) {
-                case -2:
-                    break;
                 case -1:
                     break;
                 case 0:
