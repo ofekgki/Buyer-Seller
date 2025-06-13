@@ -73,7 +73,7 @@ public class Cart {
             sb.append("   ").append(i + 1).append(") ")
                     .append(products.get(i).toString()).append("\n");
         }
-        sb.append("total : ").append(totalPrice)
+        sb.append("total : ").append(String.format("%.2f", totalPrice))
                 .append("\n------------------\n");
         return sb.toString();
     }
