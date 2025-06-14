@@ -90,14 +90,12 @@ public class ManagerFacade implements Manageable {
                     selectedProduct.getCategory().ordinal()
             );
         }
-        if(managerBuyer.getBuyers().get(buyerIndex).getCurrentCart() != null) {
+        if (managerBuyer.getBuyers().get(buyerIndex).getCurrentCart() != null) {
             managerBuyer.getBuyers()
                     .get(buyerIndex)
                     .getCurrentCart()
                     .addProductToCart(p1);
-        }
-        else
-        {
+        } else {
             managerBuyer.getBuyers().get(buyerIndex).createNewCart(sqlHelper.getLastCartID());
             managerBuyer.getBuyers().get(buyerIndex).getCurrentCart().addProductToCart(p1);
         }
@@ -194,7 +192,7 @@ public class ManagerFacade implements Manageable {
         if (buyerIndex == -1)
             return;
 
-        buyerIndex ++;
+        buyerIndex++;
         if (managerBuyer.getBuyerById(buyerIndex).getCurrentCart() == null) {
             managerBuyer.getBuyerById(buyerIndex).createNewCart(sqlHelper.getLastCartID());
         }
@@ -209,7 +207,7 @@ public class ManagerFacade implements Manageable {
             return;
         }
 
-        System.out.println(selectedSeller.toString());
+        System.out.println(selectedSeller);
 
         do {
             input = UserInput.stringInput("Enter product's number to add to your cart: ");
@@ -293,8 +291,7 @@ public class ManagerFacade implements Manageable {
     public void case5() {
         int buyerIndex = managerBuyer.paymentForBuyer(sqlHelper.getLastCartID());
         sqlHelper.UpdateCartPay(buyerIndex);
-
-
+        managerBuyer.getBuyers().get(buyerIndex -1).setCartAfterPay();
     }
 
     public String case6() {
@@ -314,9 +311,9 @@ public class ManagerFacade implements Manageable {
 
     public void case9() {
         String msg;
-        int buyerIndex = managerBuyer.chooseBuyer() + 1 ;
+        int buyerIndex = managerBuyer.chooseBuyer() + 1;
         Buyer temp = managerBuyer.getBuyerById(buyerIndex);
-        buyerIndex = temp.getBuyer_id() -1 ;
+        buyerIndex = temp.getBuyer_id() - 1;
 
         if (temp.getHistoryCartsNum() == 0) {
             System.out.println("\nHistory cart's are empty for this buyer, cannot proceed. return to main menu.");
@@ -326,16 +323,17 @@ public class ManagerFacade implements Manageable {
         if (temp.getCurrentCart() != null) {
             sqlHelper.deleteCartAndProducts(temp.getCurrentCart().getId());
             temp.deleteCart();
-        }
+        } else
+            System.out.println("No cart to replace\n");
 
-        System.out.println(temp.toString());
+        System.out.println(temp);
         do {
             input = UserInput.stringInput("Please choose cart number from history carts:\nIf you have products in your current cart - they will be replaced.");
 
             if (input.equals("-1"))
                 return;
 
-            msg = managerBuyer.isValidHistoryCartIndex(input,buyerIndex);
+            msg = managerBuyer.isValidHistoryCartIndex(input, buyerIndex);
             if (msg != null) {
                 System.out.println(msg);
             }
@@ -344,22 +342,30 @@ public class ManagerFacade implements Manageable {
         managerBuyer.getBuyers().get(buyerIndex).setCurrentCartFromHistory(
                 managerBuyer.getBuyers().get(buyerIndex).getHistoryCart().get(historyCartIndex)
         );
-
-       sqlHelper.InsertUpdateFromHistory(temp.getBuyer_id(),temp.getCurrentCart().getId(),temp.getCurrentCart().getDate()
-               ,temp.getCurrentCart().getTotalPrice());
+        int oldCartIndex = temp.getHistoryCart().get(historyCartIndex).getId();
+        int newCartId = temp.getCurrentCart().getId();
+        sqlHelper.InsertUpdateFromHistory(temp.getBuyer_id(), temp.getCurrentCart().getDate()
+                , temp.getCurrentCart().getTotalPrice());
+        sqlHelper.InsertProductsFromHistory(oldCartIndex, newCartId, temp.getBuyer_id());
 
         System.out.println("Successfully update cart.");
 
     }
 
-
     public void case10() {
 
         int buyerIndex = managerBuyer.chooseBuyer();
         Buyer buyer = managerBuyer.getBuyers().get(buyerIndex);
-        int cartId = buyer.getCurrentCart().getId();
-        buyer.createNewCart(sqlHelper.getLastCartID());
-        sqlHelper.deleteCartAndProducts(cartId);
+        if (buyer.getCurrentCart() != null) {
+            int cartId = buyer.getCurrentCart().getId();
+
+//        buyer.createNewCart(sqlHelper.getLastCartID());
+            sqlHelper.deleteCartAndProducts(cartId);
+            System.out.println("Cart Was Deleted Successfully");
+        }
+        else {
+            System.out.println("No cart to Delete\n");
+        }
 
 
     }

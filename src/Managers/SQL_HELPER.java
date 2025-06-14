@@ -115,15 +115,15 @@ public class SQL_HELPER {
         try {
             Connection conn = DBConnection.getConnection();
             String sql = """
-                    SELECT sc.cart_id, sc.buyer_id, p.product_id, p.product_name, p.price, p.category, 
-                           sp.package_price
-                    FROM ShoppingCart sc
-                    JOIN CartProduct ci ON sc.cart_id = ci.cart_id
-                    JOIN Product p ON ci.product_id = p.product_id
-                    LEFT JOIN SpecialPackage sp ON p.product_id = sp.product_id
-                    WHERE sc.status = 'COMPLETED'
-                    ORDER BY sc.cart_id
-                """;
+                        SELECT sc.cart_id, sc.buyer_id, p.product_id, p.product_name, p.price, p.category, 
+                               sp.package_price
+                        FROM ShoppingCart sc
+                        JOIN CartProduct ci ON sc.cart_id = ci.cart_id
+                        JOIN Product p ON ci.product_id = p.product_id
+                        LEFT JOIN SpecialPackage sp ON p.product_id = sp.product_id
+                        WHERE sc.status = 'COMPLETED'
+                        ORDER BY sc.cart_id
+                    """;
 
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -454,16 +454,15 @@ public class SQL_HELPER {
         }
     }
 
-    public void InsertUpdateFromHistory(int buyerId, int cartId, Date date, double total_price) {
+    public void InsertUpdateFromHistory(int buyerId, Date date, double total_price) {
 
-        String updateSql = "INSERT INTO shoppingcart (cart_id,buyer_id,cart_date,status,total_price) VALUES (?,?,?,'ACTIVE',?)";
+        String updateSql = "INSERT INTO shoppingcart (buyer_id,cart_date,status,total_price) VALUES (?,?,'ACTIVE',?)";
         try (Connection connection = DBConnection.getConnection()) {
             // Then UPDATE selected history cart to ACTIVE
             try (PreparedStatement updateStmt = connection.prepareStatement(updateSql)) {
-                updateStmt.setInt(1, cartId);
-                updateStmt.setInt(2, buyerId);
-                updateStmt.setDate(3,new java.sql.Date(date.getTime()));
-                updateStmt.setDouble(4, total_price);
+                updateStmt.setInt(1, buyerId);
+                updateStmt.setDate(2, new java.sql.Date(date.getTime()));
+                updateStmt.setDouble(3, total_price);
                 updateStmt.executeUpdate();
             }
         } catch (SQLException e) {
@@ -471,17 +470,48 @@ public class SQL_HELPER {
         }
     }
 
+    public void InsertProductsFromHistory(int oldCartId, int newCartId, int newBuyerId) {
+        String selectSql = "SELECT product_id, seller_id FROM CartProduct WHERE cart_id = ?";
+        String insertSql = "INSERT INTO cartproduct (cart_id, product_id, buyer_id, seller_id) VALUES (?, ?, ?, ?)";
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement selectStmt = connection.prepareStatement(selectSql)) {
+
+            selectStmt.setInt(1, oldCartId);
+            ResultSet rs = selectStmt.executeQuery();
+
+            try (PreparedStatement insertStmt = connection.prepareStatement(insertSql)) {
+                while (rs.next()) {
+                    int productId = rs.getInt("product_id");
+                    int sellerId = rs.getInt("seller_id");
+
+                    insertStmt.setInt(1, newCartId);
+                    insertStmt.setInt(2, productId);
+                    insertStmt.setInt(3, newBuyerId);
+                    insertStmt.setInt(4, sellerId);
+                    insertStmt.executeUpdate();
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public int getLastCartID() {
-        String sql = "SELECT MAX(cart_id) FROM shoppingcart";
+        String sql = "SELECT last_value, is_called FROM shoppingcart_cart_id_seq";
 
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             if (rs.next()) {
-                return rs.getInt(1) + 1; // first column = MAX(cart_id)
+                long lastValue = rs.getLong("last_value");
+                boolean isCalled = rs.getBoolean("is_called");
+
+                return isCalled ? (int) (lastValue + 1) : (int) lastValue;
             } else {
-                return -1; // no rows → no carts yet
+                return 1; // fallback
             }
 
         } catch (SQLException e) {
@@ -492,12 +522,12 @@ public class SQL_HELPER {
     public void deleteCartAndProducts(int cartId) {
         // SQL to delete all products from the cart, only if cart is ACTIVE
         String deleteCartProductsSQL = """
-        DELETE FROM CartProduct 
-        WHERE cart_id = ? AND EXISTS (
-            SELECT 1 FROM ShoppingCart 
-            WHERE cart_id = ? AND status = 'ACTIVE'
-        )
-    """;
+                    DELETE FROM CartProduct 
+                    WHERE cart_id = ? AND EXISTS (
+                        SELECT 1 FROM ShoppingCart 
+                        WHERE cart_id = ? AND status = 'ACTIVE'
+                    )
+                """;
 
         // SQL to delete the cart itself, only if it is ACTIVE
         String deleteCartSQL = "DELETE FROM ShoppingCart WHERE cart_id = ? AND status = 'ACTIVE'";
@@ -538,8 +568,6 @@ public class SQL_HELPER {
             System.err.println("Error while setting up transaction: " + e.getMessage());
         }
     }
-
-
 
 
 }

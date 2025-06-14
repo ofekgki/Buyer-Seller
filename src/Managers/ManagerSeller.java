@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import Comparators.CompareSellersByProductsNumber;
 import Enums.ExceptionsMessages;
 import Factory.FactoryUser;
 import Models.Seller;
@@ -18,8 +17,6 @@ public class ManagerSeller implements SellerInterface {
 
     private int last_id;
 
-    private final Comparator<Seller> comparatorSeller;
-
     private final ArrayList<Seller> list_seller = new ArrayList<>();
 
     private static ManagerSeller instance;
@@ -31,7 +28,6 @@ public class ManagerSeller implements SellerInterface {
     }
 
     private ManagerSeller() {
-        comparatorSeller = new CompareSellersByProductsNumber();
         FactoryUser fUser = new FactoryUser();
     }
 
@@ -84,20 +80,16 @@ public class ManagerSeller implements SellerInterface {
 
         StringBuilder sb = new StringBuilder("\nSellers info:\n--------------\n");
 
-        // יוצרים עותק ממוין של הרשימה
-        ArrayList<Seller> sortedSellers = new ArrayList<>(list_seller);
-        sortedSellers.sort(comparatorSeller);
-
-        for (int i = 0; i < sortedSellers.size(); i++) {
+        for (int i = 0; i < list_seller.size(); i++) {
             sb.append(i + 1)
                     .append(") ")
                     .append("seller ID : ")
                     .append(getSellers().get(i).getSeller_id())
                     .append("\n	")
                     .append("Seller Name :  ")
-                    .append(sortedSellers.get(i).getUserName())
+                    .append(list_seller.get(i).getUserName())
                     .append(": ")
-                    .append(sortedSellers.get(i).toString())
+                    .append(list_seller.get(i).toString())
                     .append("\n")
                     .append("________________________________________________________________________________\n");
 

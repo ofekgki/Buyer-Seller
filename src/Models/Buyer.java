@@ -39,7 +39,7 @@ public class Buyer extends User {
     public void payAndMakeHistoryCart(int lastID) {
         Cart hCart = new Cart(currentCart, 0);
         historyCart.add(hCart);
-        currentCart = new Cart(lastID);
+//        currentCart = new Cart(lastID);
     }
 
     @Override
@@ -88,6 +88,10 @@ public class Buyer extends User {
 
     public void setCurrentCartFromHistory(Cart cart) {
         this.currentCart = new Cart(cart, 1);
+    }
+
+    public void setCartAfterPay() {
+        this.currentCart = null;
     }
 }
 

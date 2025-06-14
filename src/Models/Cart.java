@@ -17,10 +17,6 @@ public class Cart {
         return date;
     }
 
-    public void setId(int id){
-        this.id = id;
-    }
-
     public int getId(){
         return id;
     }

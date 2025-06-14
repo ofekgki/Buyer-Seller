@@ -2,7 +2,6 @@ package Managers;
 
 import java.util.*;
 
-import Comparators.CompareBuyersByName;
 import Enums.ExceptionsMessages;
 import Exceptions.EmptyCartPayException;
 import Factory.FactoryUser;
@@ -18,12 +17,10 @@ public class ManagerBuyer implements BuyerInterface {
 
 	private final ArrayList<Buyer> list_buyers = new ArrayList<>();
 
-	private final Comparator<Buyer> comparatorBuyer;
 
 	private static ManagerBuyer instance;
 
 	private ManagerBuyer() {
-		comparatorBuyer = new CompareBuyersByName();
 		factoryUser= new FactoryUser();
 
 	}
@@ -67,15 +64,13 @@ public class ManagerBuyer implements BuyerInterface {
 		}
 
 		StringBuilder sb = new StringBuilder("\nBuyers info:\n--------------\n");
-		ArrayList<Buyer> sortedBuyers = new ArrayList<>(list_buyers);
-		sortedBuyers.sort(comparatorBuyer);
 
-		for (int i = 0; i < sortedBuyers.size(); i++) {
+		for (int i = 0; i < list_buyers.size(); i++) {
 			sb.append(i + 1).append(")	");
 			sb.append("Buyer ID : ");
 			sb.append(getBuyers().get(i).getBuyer_id());
 			sb.append("\n	");
-			sb.append(sortedBuyers.get(i).toString());
+			sb.append(list_buyers.get(i).toString());
 			sb.append("_____________________________________________________________\n");
 		}
 
