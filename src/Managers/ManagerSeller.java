@@ -65,13 +65,6 @@ public class ManagerSeller implements SellerInterface {
         list_seller.add(seller);
         last_id++;
     }
-    public void showlist(){
-        for (Seller s : list_seller) {
-            System.out.println(s);
-        }
-
-    }
-
 
     public String sellersInfo() {
         if (list_seller.isEmpty()) {

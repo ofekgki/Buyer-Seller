@@ -35,8 +35,6 @@ public class ManagerBuyer implements BuyerInterface {
 		return list_buyers;
 	}
 
-
-
 	public String isExistBuyer(String name) {
 		for (Buyer buyer : list_buyers) {
 			if (buyer.getUserName().equalsIgnoreCase(name))
@@ -212,13 +210,6 @@ public class ManagerBuyer implements BuyerInterface {
 	public void addBuyer(Buyer buyer) {
 		list_buyers.add(buyer);
 	}
-	public void showlist(){
-		for (Buyer s : list_buyers) {
-			System.out.println(s);
-		}
-
-	}
-
 
 	public Buyer getBuyerById(int buyerId) {
 		for(Buyer buyer : list_buyers){

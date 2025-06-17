@@ -255,24 +255,6 @@ public class SQL_HELPER {
         }
     }
 
-    public int getProductIdByName(String productName) {
-        try {
-            String sql = "SELECT product_id FROM Product WHERE product_name = ?";
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setString(1, productName);
-
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                int productId = rs.getInt("product_id");
-                return productId;
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return -1;
-    }
 
 
     ///////////////////////////////////////////////UPDATE DATABASE//////////////////////////////////
@@ -568,6 +550,26 @@ public class SQL_HELPER {
             System.err.println("Error while setting up transaction: " + e.getMessage());
         }
     }
+
+    public int getProductIdByName(String productName) {
+        try {
+            String sql = "SELECT product_id FROM Product WHERE product_name = ?";
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1, productName);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                int productId = rs.getInt("product_id");
+                return productId;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
+    }
+
 
 
 }

@@ -193,8 +193,8 @@ public class ManagerFacade implements Manageable {
             return;
 
         buyerIndex++;
-        if (managerBuyer.getBuyerById(buyerIndex).getCurrentCart() == null) {
-            managerBuyer.getBuyerById(buyerIndex).createNewCart(sqlHelper.getLastCartID());
+        if (managerBuyer.getBuyerById(buyerIndex -1).getCurrentCart() == null) {
+            managerBuyer.getBuyerById(buyerIndex -1).createNewCart(sqlHelper.getLastCartID());
         }
 
         int sellerIndex = managerSeller.chooseSeller();

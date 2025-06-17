@@ -15,10 +15,6 @@ public class ManagerProduct implements ProductInterface {
 
     ArrayList<Product> products_list = new ArrayList<>();
 
-    private int logicProductsSize = 0;
-
-    private final int SIZE_INCREASE = 2;
-
     private static ManagerProduct instance;
 
     public static ManagerProduct getInstance() {
@@ -31,11 +27,6 @@ public class ManagerProduct implements ProductInterface {
 
         categoriesArrays = new Categories();
 
-    }
-
-
-    public int getLogicProductsSize() {
-        return logicProductsSize;
     }
 
     public ArrayList<Product>  getAllProducts() {
@@ -66,13 +57,12 @@ public class ManagerProduct implements ProductInterface {
         return totalPrice;
     }
 
-
     public String productsByCategory() {
         if (products_list.isEmpty()) {
             return "No products available.";
         }
 
-        // יוצרים עותק ממוין של הרשימה לפי קטגוריה
+        // Create a Sorted Copy Of the array
         ArrayList<Product> sorted = new ArrayList<>(products_list);
         sorted.sort(Comparator.comparing(Product::getCategory));
 
@@ -92,7 +82,6 @@ public class ManagerProduct implements ProductInterface {
         return sb.toString();
     }
 
-
     public String validCategoryIndex(String categoryInput) {
         try {
             int categoryChoice = Integer.parseInt(categoryInput);
@@ -105,7 +94,6 @@ public class ManagerProduct implements ProductInterface {
         }
         return null;
     }
-
 
     public void addToCategoryArray(Product p) {
         switch (p.getCategory()) {
@@ -126,106 +114,10 @@ public class ManagerProduct implements ProductInterface {
         }
     }
 
-
-
-//    public ListIterator<String> listIterator() {
-//        return new MyListIterator(0);
-//    }
-//
-//    public Iterator<String> iterator() {
-//        return new ConcreteIterator();
-//    }
-
     public void addtolist(Product product) {
         products_list.add(product);
     }
 
-    public void show_list(){
-        for (Product s : products_list) {
-            System.out.println(s);
-        }
-    }
 
-//    private class ConcreteIterator implements Iterator<String> {
-//        int cur = 0;
-//
-//        @Override
-//        public boolean hasNext() {
-//            return cur < logicProductsSize;
-//        }
-//
-//        @Override
-//        public String next() {
-//            if (!hasNext())
-//                throw new NoSuchElementException();
-//            String tmp = allProducts[cur].getProductName().toLowerCase();
-//
-//            cur++;
-//            return tmp;
-//        }
-//
-//        @Override
-//        public void remove() {
-//            throw new UnsupportedOperationException();
-//
-//        }
-//
-//    }
-//
-//
-//    private class MyListIterator extends ConcreteIterator implements ListIterator<String> {
-//
-//        MyListIterator(int index) {
-//            cur = index;
-//        }
-//
-//        @Override
-//        public boolean hasNext() {
-//            return cur < logicProductsSize;
-//        }
-//
-//
-//        @Override
-//        public boolean hasPrevious() {
-//            return cur > 0;
-//
-//        }
-//
-//
-//        @Override
-//        public String previous() {
-//            if (!hasPrevious())
-//                throw new NoSuchElementException();
-//            cur--;
-//
-//            String tmp = allProducts[cur].getProductName().toLowerCase();
-//            return tmp;
-//        }
-//
-//        @Override
-//        public int nextIndex() {
-//            throw new UnsupportedOperationException();
-//        }
-//
-//        @Override
-//        public int previousIndex() {
-//            throw new UnsupportedOperationException();
-//
-//        }
-//
-//        @Override
-//        public void set(String e) {
-//            throw new UnsupportedOperationException();
-//
-//        }
-//
-//        @Override
-//        public void add(String e) {
-//            throw new UnsupportedOperationException();
-//
-//        }
-//
-//    }
-//
 
 }
