@@ -320,7 +320,7 @@ public class SQL_HELPER {
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
 
-            stmt.setString(1, username);
+            stmt.setString(1, username.toLowerCase());
             ResultSet rs = stmt.executeQuery();
             return rs.next();
         }

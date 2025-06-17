@@ -237,6 +237,7 @@ public class ManagerFacade implements Manageable {
         message = ManagerSeller.getInstance().isExistSeller(input);
         if (message != null) {
             System.out.println(message);
+            return;
         }
 
         String username = input;
@@ -258,6 +259,11 @@ public class ManagerFacade implements Manageable {
 
     public void case2() {
         String username = UserInput.stringInput("Please enter buyer name: ");
+        message = managerBuyer.isExistBuyer(username);
+        if (message != null) {
+            System.out.println(message);
+            return;
+        }
 
         try {
             if (sqlHelper.isUserExists(username)) {
